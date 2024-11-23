@@ -1,3 +1,4 @@
+import 'package:finance_tracker/providers/auth_provider.dart';
 import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/theme.dart';
@@ -99,8 +100,15 @@ class _ProfileState extends ConsumerState<Profile> {
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: 40,),
+            Center(
+              child: FilledButton(onPressed: () async {
+                final authRepository = ref.read(authRepositoryProvider);
+                await authRepository.signOut();
+                context.goNamed('SignIn');
+              }, child: const TextMedium('Sign Out')),
             )
-            
           ],
         ),
       )

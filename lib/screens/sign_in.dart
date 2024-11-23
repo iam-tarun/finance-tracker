@@ -1,16 +1,19 @@
+import 'package:finance_tracker/providers/auth_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class  SignIn extends StatelessWidget {
+class  SignIn extends ConsumerWidget {
   SignIn ({super.key});
 
   final signInFormKey = GlobalKey<FormState>();
-  String _username = '';
+  String _email = '';
   String _password = '';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const TitleMedium('Finance Tracker'),
@@ -26,7 +29,7 @@ class  SignIn extends StatelessWidget {
               const SizedBox(height: 40,),
               TextFormField(
                 decoration: InputDecoration(
-                  label: const HeadlineSmall('username or email'),
+                  label: const HeadlineSmall('Email'),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: AppColors.primaryTextColor
@@ -45,13 +48,13 @@ class  SignIn extends StatelessWidget {
                   return null;
                 },
                 onSaved: (v) {
-                  _username  = v!;
+                  _email  = v!;
                 },
               ),
               const SizedBox(height: 20,),
               TextFormField(
                 decoration: InputDecoration(
-                  label: const HeadlineSmall('password'),
+                  label: const HeadlineSmall('Password'),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: AppColors.primaryTextColor
@@ -76,17 +79,23 @@ class  SignIn extends StatelessWidget {
               ),
               const SizedBox(height: 40,),
               Center(child: 
-                      FilledButton(onPressed: () {
-                        if (_formGlobalKey.currentState!.validate()) {
-                          _formGlobalKey.currentState!.save();
-                          final _user = ref.read(userProvider);
-                          ref.read(transactionProvider.notifier).addTransaction(
-                              Transaction(id: '1', categoryId: _selectedCategory, description: _description, date: _date, amount: _amount, userId: _user.id, cardId: _selectedCard)
-                            );
+                      FilledButton(onPressed: () async {
+                        if (signInFormKey.currentState!.validate()) {
+                          signInFormKey.currentState!.save();
 
-                          _formGlobalKey.currentState!.reset();
-                          _selectedCategory = _categories[0].id;
-                          _selectedCard = _cards[0].id;
+                          final authRepo = ref.read(authRepositoryProvider);
+                          final error = await authRepo.signInWithEmailAndPassword(_email, _password);
+
+                          if (error != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: TextMedium(error)),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: TextMedium('Sign-in successful!')),
+                            );
+                            context.goNamed('Home');
+                          }
                         }
                       }, 
                       style: FilledButton.styleFrom(
@@ -98,7 +107,12 @@ class  SignIn extends StatelessWidget {
                       ),
                       child: const HeadlineMedium('SignIn'),
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 20,),
+                    const Center(child: TextMedium('New here?')),
+                    TextButton(onPressed: () {
+                      context.goNamed('SignUp');
+                    }, child: const TextMedium('Register account'))
             ],
           ),
         ),
