@@ -1,3 +1,4 @@
+import 'package:finance_tracker/providers/auth_provider.dart';
 import 'package:finance_tracker/screens/add_category.dart';
 import 'package:finance_tracker/screens/all_transactions.dart';
 import 'package:finance_tracker/screens/credit_cards.dart';
@@ -11,6 +12,7 @@ import 'package:finance_tracker/screens/sign_in.dart';
 import 'package:finance_tracker/screens/sign_up.dart';
 import 'package:finance_tracker/screens/user_credit_cards.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class AppNavigation {
@@ -25,11 +27,27 @@ class AppNavigation {
   static final _rootNavigatorExpenses = GlobalKey<NavigatorState>();
   static final _rootNavigatorSavings = GlobalKey<NavigatorState>();
   
+  static GoRouter router(WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
 
-  /// Go Router Configuration
-  static final GoRouter router = GoRouter(
-    initialLocation: initR,
+    return GoRouter(
+    initialLocation: authState.value == null ? initR : '/home',
     navigatorKey: _rootNavigatorKey,
+    redirect: (context, state) {
+      final isLoggedIn = authState.value != null;
+      final isLoggingIn = state.uri.toString() == '/signIn' || state.uri.toString() == '/signUp';
+
+      if (!isLoggedIn && !isLoggingIn) {
+        return '/signIn';
+      }
+
+      if (isLoggedIn && isLoggingIn) {
+        return '/home';
+      }
+
+      return null;
+
+    },
     routes: <RouteBase>[
       
       GoRoute(
@@ -186,5 +204,9 @@ class AppNavigation {
 
     ],
   );
+  }
+
+  /// Go Router Configuration
+  
 
 }

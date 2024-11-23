@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"ios":{"default":{"projectId":"finance-tracker-tarun","appId":"1:545282112272:ios:68c8090f3bd837fac68395","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"finance-tracker-tarun","configurations":{"ios":"1:545282112272:ios:68c8090f3bd837fac68395"}}}}}}
