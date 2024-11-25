@@ -64,10 +64,14 @@ A cross-platform mobile application designed to help users monitor their expense
 ---
 
 ## 📈 Roadmap
-
-- [x] Build basic expense tracking functionality.
-- [x] Implement category-wise expense visualization.
-- [x] Add offline mode with sync capabilities.
+- [x] Design and Build Screens.
+- [x] Setup State management with riverpod. 
+- [x] Setup Firebase Authentication.
+- [x] Setup User Model and Category Model.
+- [ ] Setup Transactions Model and Functionality.   
+- [ ] Build basic expense tracking functionality.
+- [ ] Implement category-wise expense visualization.
+- [ ] Add offline mode with sync capabilities.
 - [ ] Integrate detailed analytics and reporting.
 - [ ] Add multi-language support.
 - [ ] Deploy a web version for broader accessibility.
