@@ -1,6 +1,5 @@
 import 'package:finance_tracker/models/category_model.dart';
 import 'package:finance_tracker/providers/categories_provider.dart';
-import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/theme.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,18 @@ class AddCategory extends ConsumerWidget {
   String _name = '';
 
   @override
-  Widget build(BuildContext context, WidgetRef  ref) {
-    final categories = ref.read(categoriesProvider.notifier);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categories = ref.watch(categoriesProvider);
+    return categories.when(
+      data: (categories) => buildCategory(context, categories, ref),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        body: Center(child: TextMedium('Error: $error'),),
+      )
+    );
+  }
+
+  Widget buildCategory(BuildContext context,List<Category> categories, WidgetRef  ref) {
     return Scaffold(
       appBar: AppBar(
         
@@ -59,8 +68,8 @@ class AddCategory extends ConsumerWidget {
                       FilledButton(onPressed: () {
                         if (_newCategoryFormKey.currentState!.validate()) {
                           _newCategoryFormKey.currentState!.save();
-                          final _user = ref.read(userProvider);
-                          categories.addCategory(Category(id: '1', name: _name, iconPath: '', userId: _user.id));      
+                          
+                          ref.read(categoriesProvider.notifier).createCategory(Category(name: _name, iconPath: ''));      
                           _newCategoryFormKey.currentState!.reset();
                         }
                       }, 

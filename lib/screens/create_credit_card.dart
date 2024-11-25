@@ -218,7 +218,7 @@ class _CreateCreditCardState extends ConsumerState<CreateCreditCard> {
                               interestRate: _interestRate,
                               dueDate: _dueDate,
                               rewards: _rewards,
-                              userId: _user.id
+                              userId: '1'
                             ));
                           
                           _formGlobalKey.currentState!.reset();

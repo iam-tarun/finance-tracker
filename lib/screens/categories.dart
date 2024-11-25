@@ -1,4 +1,6 @@
+import 'package:finance_tracker/models/category_model.dart';
 import 'package:finance_tracker/providers/categories_provider.dart';
+import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_tracker/shared/category_card_display.dart';
@@ -16,9 +18,18 @@ class _CategoriesState extends ConsumerState<Categories> {
 
   @override
   Widget build(BuildContext context) {
-
     final categories = ref.watch(categoriesProvider);
+    return categories.when(
+      data: (categories) => buildCategories(context, categories),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        body: Center(child: TextMedium('Error: $error'),),
+      )
+    );
+  }
 
+  
+  Widget buildCategories(BuildContext context, List<Category> categories) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

@@ -52,5 +52,10 @@ class AuthRepository {
     await _auth.currentUser?.getIdToken(true);
   }
 
+  String? getLoggedInUserEmail() {
+    final user = _auth.currentUser;
+    return user?.email;
+  }
+
 }
 

@@ -1,4 +1,5 @@
 import 'package:finance_tracker/providers/auth_provider.dart';
+import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/theme.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class  SignIn extends ConsumerWidget {
                 maxLength: 40,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'You must enter the description';
+                    return 'You must enter the password';
                   }
                   return null;
                 },
@@ -91,6 +92,7 @@ class  SignIn extends ConsumerWidget {
                               SnackBar(content: TextMedium(error)),
                             );
                           } else {
+                            await ref.read(userProvider.notifier).getUser(_email);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: TextMedium('Sign-in successful!')),
                             );

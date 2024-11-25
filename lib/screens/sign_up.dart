@@ -1,4 +1,6 @@
+import 'package:finance_tracker/models/user_profile_model.dart';
 import 'package:finance_tracker/providers/auth_provider.dart';
+import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/theme.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ class  SignUp extends ConsumerWidget {
   SignUp ({super.key});
 
   final signUpFormKey = GlobalKey<FormState>();
+  String _name = '';
   String _username = '';
   String _email = '';
   String _password = '';
@@ -28,6 +31,25 @@ class  SignUp extends ConsumerWidget {
             children: [
               const HeadlineLarge('Sign Up'),
               const SizedBox(height: 40,),
+              TextFormField(
+                decoration: InputDecoration(label: const HeadlineSmall('Name'),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.primaryTextColor
+                    )
+                  )),
+                maxLength: 40,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'You must enter a name';
+                  }
+                  return null;
+                },
+                onSaved: (v) {
+                  _name = v!;
+                },
+              ),
+              const SizedBox(height: 20,),
               TextFormField(
                 decoration: InputDecoration(label: const HeadlineSmall('Username'),
                   enabledBorder: UnderlineInputBorder(
@@ -106,8 +128,9 @@ class  SignUp extends ConsumerWidget {
                         SnackBar(content: TextMedium(error)),
                       );
                     } else {
-                      //TODO:
-                      // save username to firestore or user database
+
+                      await ref.read(userProvider.notifier).addUser(new UserProfile(name: _name, email: _email, username: _username, profilePictureUrl: "", currency: "", enable2FA: false, receiveNotifications: false));
+                      
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: TextMedium('Sign-up successful!')),
                       );
