@@ -1,3 +1,4 @@
+import 'package:finance_tracker/models/credit_card_model.dart';
 import 'package:finance_tracker/providers/credit_cards_provider.dart';
 import 'package:finance_tracker/screens/create_credit_card.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
@@ -26,8 +27,31 @@ class _UserCreditCardsState extends ConsumerState<UserCreditCards> {
 
   @override
   Widget build(BuildContext context) {
+    final cards = ref.watch(creditCardsProvider);
 
-    final _cards = ref.read(creditCardsProvider);
+    if (cards.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (cards.hasError) {
+      return Scaffold(
+        body: Center(
+          child: TextMedium(
+            'Error: ${cards.error}',
+          ),
+        ),
+      );
+    }
+
+    return buildCreditCardUpdateModal(context, cards.value ?? []);
+
+  }
+
+
+
+  Widget buildCreditCardUpdateModal(BuildContext context, List<CreditCard> cards) {
+
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -36,10 +60,10 @@ class _UserCreditCardsState extends ConsumerState<UserCreditCards> {
       body: Column(children: [
         Expanded(
             child: ListView.builder(
-          itemCount: _cards.length,
+          itemCount: cards.length,
           itemBuilder: (context, index) {
             return ExpansionTile(
-              title: TextLarge(_cards[index].name),
+              title: TextLarge(cards[index].name),
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -56,7 +80,7 @@ class _UserCreditCardsState extends ConsumerState<UserCreditCards> {
                         children: [
                           const TextMedium('Credit Limit'),
                           const SizedBox(width: 40,),
-                          HeadlineMedium(_cards[index].creditLimit)
+                          HeadlineMedium(cards[index].creditLimit)
                         ],
                       ),
                       Row(
@@ -64,7 +88,7 @@ class _UserCreditCardsState extends ConsumerState<UserCreditCards> {
                         children: [
                           const TextMedium('Reward Points'),
                           const SizedBox(width: 40,),
-                          HeadlineMedium(_cards[index].rewards.toString())
+                          HeadlineMedium(cards[index].rewards.toString())
                         ],
                       ),
                       Row(
@@ -72,7 +96,7 @@ class _UserCreditCardsState extends ConsumerState<UserCreditCards> {
                         children: [
                           const TextMedium('Interest Rate'),
                           const SizedBox(width: 40,),
-                          HeadlineMedium(_cards[index].interestRate)
+                          HeadlineMedium(cards[index].interestRate)
                         ],
                       ),
 

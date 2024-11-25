@@ -1,4 +1,5 @@
 import 'package:finance_tracker/models/bar_data_model.dart';
+import 'package:finance_tracker/models/credit_card_model.dart';
 import 'package:finance_tracker/providers/credit_cards_provider.dart';
 import 'package:finance_tracker/shared/card_stats.dart';
 import 'package:finance_tracker/shared/credit_card_display.dart';
@@ -32,7 +33,27 @@ class _CreditCardsState extends ConsumerState<CreditCards> {
 
   @override
   Widget build(BuildContext context) {
-    final _cards = ref.read(creditCardsProvider);
+    final cards = ref.watch(creditCardsProvider);
+
+    if (cards.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (cards.hasError) {
+      return Scaffold(
+        body: Center(
+          child: TextMedium(
+            'Error: ${cards.error}',
+          ),
+        ),
+      );
+    }
+
+    return buildCreditCards(context, cards.value ?? []);
+
+  }
+  
+  Widget buildCreditCards(BuildContext context, List<CreditCard> cards) {
     
     return Scaffold(
       body: Column(
@@ -41,10 +62,10 @@ class _CreditCardsState extends ConsumerState<CreditCards> {
             SizedBox(
               height: 200,
               child: Visibility(
-                visible: _cards.isNotEmpty,
+                visible: cards.isNotEmpty,
                 replacement: const SizedBox(height: 20, child: Center(child: HeadlineMedium('No Cards to Display'))),
                 child: PageView.builder(
-                itemCount: _cards.length,
+                itemCount: cards.length,
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() {
@@ -54,14 +75,14 @@ class _CreditCardsState extends ConsumerState<CreditCards> {
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    child: CreditCardDisplay(_cards[index])
+                    child: CreditCardDisplay(cards[index])
                     );
                 },
               )
             )
             ),
             const SizedBox(height: 20,),
-            _cards.isNotEmpty ? CardStats(_cards[_currentPage], data[_currentPage]) : const SizedBox.shrink()
+            cards.isNotEmpty ? CardStats(cards[_currentPage], data[_currentPage]) : const SizedBox.shrink()
     
           ]
         ),

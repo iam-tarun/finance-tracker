@@ -1,7 +1,6 @@
 import 'package:finance_tracker/models/category_model.dart';
 import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/repositories/category_repository.dart';
-import 'package:finance_tracker/screens/categories.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final categoriesProvider = AsyncNotifierProvider<CategoriesNotifier, List<Category>>(() => CategoriesNotifier(),);
@@ -12,15 +11,13 @@ class CategoriesNotifier extends AsyncNotifier<List<Category>> {
   @override
   Future<List<Category>> build() async{
     
-      ref.listen(userProvider, (previous, next) async {
-        if (next is AsyncData && next.value != null) {
-          final userId = next.value!.id;
-          final repo = ref.read(categoryRepositoryProvider);
-          final categories = await repo.fetchCategories(userId);
-          state = AsyncData(categories);
-        }
-      });
-    return [];
+      final userState = ref.watch(userProvider);
+
+    
+      final userId = userState.value!.id;
+      final repo = ref.read(categoryRepositoryProvider);
+      return await repo.fetchCategories(userId);
+    
   }
 
   Future<void> fetchCategories() async {
@@ -29,7 +26,6 @@ class CategoriesNotifier extends AsyncNotifier<List<Category>> {
       final repo = ref.read(categoryRepositoryProvider);
       final categories = await repo.fetchCategories(userId);
       state = AsyncData(categories);
-      print(state);
     } catch (e) {
       state = AsyncError(e, StackTrace.current);
     }
