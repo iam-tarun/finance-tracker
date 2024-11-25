@@ -1,3 +1,4 @@
+import 'package:finance_tracker/models/category_model.dart';
 import 'package:finance_tracker/models/transaction_model.dart';
 import 'package:finance_tracker/providers/categories_provider.dart';
 import 'package:finance_tracker/providers/credit_cards_provider.dart';
@@ -28,16 +29,27 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
 
   @override
   Widget build(BuildContext context) {
+    final categories = ref.watch(categoriesProvider);
+    return categories.when(
+      data: (categories) => buildNewExpense(context, categories),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        body: Center(child: TextMedium('Error: $error'),),
+      )
+    ); 
+  }
+
+  Widget buildNewExpense(BuildContext context, List<Category> categories) {
 
     bool _showForm = true;
 
-    final _categories = ref.watch(categoriesProvider);
-    var _selectedCategory = _categories.isEmpty ? '' : _categories[0].id;
+    
+    var _selectedCategory = categories.isEmpty ? '' : categories[0].id;
 
     final _cards = ref.watch(creditCardsProvider);
     var _selectedCard = _cards.isEmpty ? '' : _cards[0].id;
 
-    if (_cards.isEmpty || _categories.isEmpty) {
+    if (_cards.isEmpty || categories.isEmpty) {
       _showForm = false;
     }
 
@@ -94,7 +106,7 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
                       DropdownButtonFormField(
                         value: _selectedCategory,
                         dropdownColor: AppColors.primaryColor,
-                        items: _categories.map((v) {
+                        items: categories.map((v) {
                           return DropdownMenuItem(
                             value: v.id,
                             child: HeadlineSmall(v.name)
@@ -176,11 +188,11 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
                           _formGlobalKey.currentState!.save();
                           final _user = ref.read(userProvider);
                           ref.read(transactionProvider.notifier).addTransaction(
-                              Transaction(id: '1', categoryId: _selectedCategory, description: _description, date: _date, amount: _amount, userId: _user.id, cardId: _selectedCard)
+                              Transaction(id: '1', categoryId: _selectedCategory, description: _description, date: _date, amount: _amount, userId: '1', cardId: _selectedCard)
                             );
 
                           _formGlobalKey.currentState!.reset();
-                          _selectedCategory = _categories[0].id;
+                          _selectedCategory = categories[0].id;
                           _selectedCard = _cards[0].id;
                         }
                       }, 

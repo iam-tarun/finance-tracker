@@ -1,3 +1,4 @@
+import 'package:finance_tracker/models/user_profile_model.dart';
 import 'package:finance_tracker/providers/auth_provider.dart';
 import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
@@ -6,18 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class Profile extends ConsumerStatefulWidget {
+class Profile extends ConsumerWidget {
   const Profile({super.key});
 
   @override
-  ConsumerState<Profile> createState() => _ProfileState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userState = ref.watch(userProvider);
+    return userState.when(
+      data: (user) => buildProfile(context, user!, ref),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        body: Center(child: TextMedium('Error: $error'),),
+      )
+    );
+  }
 
-class _ProfileState extends ConsumerState<Profile> {
-  @override
-  Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-    
+  Widget buildProfile(BuildContext context, UserProfile user, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('profile'),
