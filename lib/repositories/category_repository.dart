@@ -27,4 +27,8 @@ class FirestoreCategoryRepository {
     }
   }
 
+  Future<void> deleteCategory(String id) async {
+    await _firestore.collection('Categories').doc(id).delete();
+  }
+
 }

@@ -1,4 +1,5 @@
 import 'package:finance_tracker/models/category_model.dart';
+import 'package:finance_tracker/models/credit_card_model.dart';
 import 'package:finance_tracker/models/transaction_model.dart';
 import 'package:finance_tracker/providers/categories_provider.dart';
 import 'package:finance_tracker/providers/credit_cards_provider.dart';
@@ -30,26 +31,35 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(categoriesProvider);
-    return categories.when(
-      data: (categories) => buildNewExpense(context, categories),
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stack) => Scaffold(
-        body: Center(child: TextMedium('Error: $error'),),
-      )
-    ); 
+    final cards = ref.watch(creditCardsProvider);
+
+    if (categories.isLoading ||  cards.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (categories.hasError || cards.hasError) {
+      return Scaffold(
+        body: Center(
+          child: TextMedium(
+            'Error: ${categories.error ?? cards.error}',
+          ),
+        ),
+      );
+    }
+
+    return buildNewExpense(context, categories.value ?? [], cards.value ?? []); 
   }
 
-  Widget buildNewExpense(BuildContext context, List<Category> categories) {
+  Widget buildNewExpense(BuildContext context, List<Category> categories, List<CreditCard> cards) {
 
     bool _showForm = true;
 
-    
     var _selectedCategory = categories.isEmpty ? '' : categories[0].id;
 
-    final _cards = ref.watch(creditCardsProvider);
-    var _selectedCard = _cards.isEmpty ? '' : _cards[0].id;
+    
+    var _selectedCard = cards.isEmpty ? '' : cards[0].id;
 
-    if (_cards.isEmpty || categories.isEmpty) {
+    if (cards.isEmpty || categories.isEmpty) {
       _showForm = false;
     }
 
@@ -125,7 +135,7 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
                       DropdownButtonFormField(
                         value: _selectedCard,
                         dropdownColor: AppColors.primaryColor,
-                        items: _cards.map((v) {
+                        items: cards.map((v) {
                           return DropdownMenuItem(
                             value: v.id,
                             child: HeadlineSmall(v.name)
@@ -193,7 +203,7 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
 
                           _formGlobalKey.currentState!.reset();
                           _selectedCategory = categories[0].id;
-                          _selectedCard = _cards[0].id;
+                          _selectedCard = cards[0].id;
                         }
                       }, 
                       style: FilledButton.styleFrom(
