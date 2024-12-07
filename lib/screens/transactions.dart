@@ -1,4 +1,6 @@
+import 'package:finance_tracker/models/transaction_model.dart';
 import 'package:finance_tracker/providers/transaction_provider.dart';
+import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/shared/transaction_card.dart';
 import 'package:finance_tracker/theme.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +14,31 @@ class Transactions extends ConsumerStatefulWidget {
 }
 
 class _TransactionsState extends ConsumerState<Transactions> {
-
-
+  
   @override
   Widget build(BuildContext context) {
 
-    final _transactions = ref.read(transactionProvider);
+    final transactions = ref.read(transactionProvider);
+
+    if (transactions.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (transactions.hasError) {
+      return Scaffold(
+        body: Center(
+          child: TextMedium(
+            'Error: ${transactions.error}',
+          ),
+        ),
+      );
+    }
+
+    return buildTransactions(context, transactions.value ?? []);
+  }
+
+
+  Widget buildTransactions(BuildContext context, List<Transaction> transactions) {
 
     return Scaffold(
       body: Column(
@@ -25,9 +46,9 @@ class _TransactionsState extends ConsumerState<Transactions> {
         children: [
           Expanded(
             child: ListView.builder(
-            itemCount: _transactions.length,
+            itemCount: transactions.length,
             itemBuilder: (context, index) {
-              return TransactionCard(_transactions[index]);
+              return TransactionCard(transactions[index]);
             },
             )
           )
