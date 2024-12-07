@@ -7,7 +7,7 @@ class CreditCard {
   String id;
   String? userId;
   final String name;
-  final String balance;
+  String balance;
   final String creditLimit;
   final String interestRate;
   final String dueDate;

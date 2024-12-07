@@ -22,6 +22,20 @@ class CreditCardsNotifier extends AsyncNotifier<List<CreditCard>> {
     await fetchCreditCards();
   }
 
+  CreditCard? fetchCardById(String id) {
+    final cardState = ref.read(creditCardsProvider);
+    if (cardState is AsyncData) {
+      return cardState.value!.firstWhere((card) => card.id == id, orElse: () => null as CreditCard);
+    }
+    return null;
+  }
+
+  Future<void> updateCreditCard(CreditCard card) async {
+    final repo = ref.read(creditCardRepositoryProvider);
+    await repo.updateCreditCard(card);
+    await fetchCreditCards();
+  }
+
   Future<void> fetchCreditCards() async {
     final userId = ref.read(userProvider.notifier).userId;
     final repo = ref.read(creditCardRepositoryProvider);

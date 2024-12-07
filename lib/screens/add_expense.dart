@@ -4,7 +4,6 @@ import 'package:finance_tracker/models/transaction_model.dart';
 import 'package:finance_tracker/providers/categories_provider.dart';
 import 'package:finance_tracker/providers/credit_cards_provider.dart';
 import 'package:finance_tracker/providers/transaction_provider.dart';
-import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/shared/date_picker_form_field.dart';
 import 'package:finance_tracker/theme.dart';
@@ -193,12 +192,12 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
                       ),
                       const SizedBox(height: 40),
                       Center(child: 
-                      FilledButton(onPressed: () {
+                      FilledButton(onPressed: () async {
                         if (_formGlobalKey.currentState!.validate()) {
                           _formGlobalKey.currentState!.save();
-                          final _user = ref.read(userProvider);
-                          ref.read(transactionProvider.notifier).addTransaction(
-                              Transaction(id: '1', categoryId: _selectedCategory, description: _description, date: _date, amount: _amount, userId: '1', cardId: _selectedCard)
+                          
+                          await ref.read(transactionProvider.notifier).addTransaction(
+                              Transaction(categoryId: _selectedCategory, description: _description, date: _date, amount: _amount, cardId: _selectedCard)
                             );
 
                           _formGlobalKey.currentState!.reset();

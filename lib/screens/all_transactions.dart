@@ -1,3 +1,4 @@
+import 'package:finance_tracker/models/transaction_model.dart';
 import 'package:finance_tracker/providers/transaction_provider.dart';
 import 'package:finance_tracker/shared/custom_text.dart';
 import 'package:finance_tracker/shared/transaction_card.dart';
@@ -14,10 +15,33 @@ class AllTransactions extends ConsumerStatefulWidget {
 
 class _AllTransactionsState extends ConsumerState<AllTransactions> {
 
+  
+
   @override
   Widget build(BuildContext context) {
+    final transactions = ref.watch(transactionProvider);
 
-    final _transactions = ref.watch(transactionProvider);
+    if (transactions.isLoading) {
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (transactions.hasError) {
+      return Scaffold(
+        body: Center(
+          child: TextMedium(
+            'Error: ${transactions.error}',
+          ),
+        ),
+      );
+    }
+
+    return buildTransactions(context, transactions.value ?? []);
+
+  }
+
+  Widget buildTransactions(BuildContext context, List<Transaction> transactions) {
+
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -28,9 +52,9 @@ class _AllTransactionsState extends ConsumerState<AllTransactions> {
         children: [
           Expanded(
             child: ListView.builder(
-            itemCount: _transactions.length,
+            itemCount: transactions.length,
             itemBuilder: (context, index) {
-              return TransactionCard(_transactions[index]);
+              return TransactionCard(transactions[index]);
             },
             )
           )
