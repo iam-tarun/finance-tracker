@@ -23,8 +23,15 @@ class FirestoreCreditCardRepository {
     return data.docs.map((c) => CreditCard.fromMap(c.data())).toList();
   }
 
-  Future<void> updateCreditCard(CreditCard card) async {
-    await _firestore.collection('CreditCards').doc(card.id).set(card.toMap());
+  Future<void> updateCreditCardBalance(CreditCard card) async {
+    final data = await _firestore.collection('CreditCards').where("id", isEqualTo: card.id).limit(1).get();
+    if(data.docs.isNotEmpty) {
+      final docRef = data.docs.first.reference;
+      await docRef.update({"balance": card.balance});
+    }
+    else {
+      print("No document found!");
+    }
   }
 
   Future<void> deleteCreditCard(String id) async {

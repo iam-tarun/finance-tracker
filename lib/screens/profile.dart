@@ -110,7 +110,7 @@ class Profile extends ConsumerWidget {
             Center(
               child: FilledButton(onPressed: () async {
                 final authRepository = ref.read(authRepositoryProvider);
-                await authRepository.signOut();
+                await authRepository.signOut(ref);
                 context.goNamed('SignIn');
               }, child: const TextMedium('Sign Out')),
             )

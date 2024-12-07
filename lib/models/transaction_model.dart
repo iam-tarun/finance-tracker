@@ -20,7 +20,7 @@ class Transaction {
   final String cardId;
   final String description;
   final String date;
-  final num amount;
+  final double amount;
 
   Map<String, dynamic> toMap() {
     return {
@@ -42,7 +42,7 @@ class Transaction {
       date: map['date'],
       amount: map['amount'],
       userId: map['userId'],
-      id: map['id']
+      id: map['id'],
     );
   }
 

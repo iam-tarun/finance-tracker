@@ -39,7 +39,7 @@ class CreditCard {
   }
 
   factory CreditCard.fromMap(Map<String, dynamic> map) {
-    return CreditCard(name: map['name'], balance: map['balance'], creditLimit: map['creditLimit'], interestRate: map['interestRate'], dueDate: map['dueDate'], rewards: map['rewards']);
+    return CreditCard(name: map['name'], balance: map['balance'], creditLimit: map['creditLimit'], interestRate: map['interestRate'], dueDate: map['dueDate'], rewards: map['rewards'], id: map['id'], userId: map['userId']);
   }
 
 }

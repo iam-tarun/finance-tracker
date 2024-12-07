@@ -24,12 +24,12 @@ class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
     }
 
     // Update credit card balance
-    // final card = ref.read(creditCardsProvider.notifier).fetchCardById(transaction.cardId);
-    // if (card == null) {
-    //   throw Exception('Card not found for ID: ${transaction.cardId}');
-    // }
-    // card.balance = (int.parse(card.balance) + transaction.amount).toString();
-    // await ref.read(creditCardsProvider.notifier).updateCreditCard(card);
+    final card = ref.read(creditCardsProvider.notifier).fetchCardById(transaction.cardId);
+    if (card == null) {
+      throw Exception('Card not found for ID: ${transaction.cardId}');
+    }
+    card.balance = (double.parse(card.balance) + transaction.amount).toString();
+    await ref.read(creditCardsProvider.notifier).updateCreditCard(card);
 
     // Add transaction
     transaction.userId = userId;

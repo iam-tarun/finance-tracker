@@ -212,13 +212,11 @@ class _CreateCreditCardState extends ConsumerState<CreateCreditCard> {
                             ref.read(creditCardsProvider.notifier).addCreditCard(
                             CreditCard(
                               name: _name,
-                              id: '1',
                               balance: _balance,
                               creditLimit: _creditLimit,
                               interestRate: _interestRate,
                               dueDate: _dueDate,
                               rewards: _rewards,
-                              userId: '1'
                             ));
                           
                           _formGlobalKey.currentState!.reset();

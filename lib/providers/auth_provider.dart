@@ -1,3 +1,7 @@
+import 'package:finance_tracker/providers/categories_provider.dart';
+import 'package:finance_tracker/providers/credit_cards_provider.dart';
+import 'package:finance_tracker/providers/transaction_provider.dart';
+import 'package:finance_tracker/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,8 +48,13 @@ class AuthRepository {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(WidgetRef ref) async {
     await _auth.signOut();
+    ref.invalidate(authStateProvider);
+    ref.invalidate(creditCardsProvider);
+    ref.invalidate(transactionProvider);
+    ref.invalidate(categoriesProvider);
+    ref.invalidate(userProvider);
   }
 
   Future<void> refreshUserToken() async {
